@@ -37,7 +37,7 @@ export class UsersService {
     });
   }
 
-  async getCurrentUser(user: AuthenticatedUser) {
+  async getUserFromAuthenticated(user: AuthenticatedUser) {
     const dbUser = await db.user.findUnique({
       where: {
         id: user.userId,

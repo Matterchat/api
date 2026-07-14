@@ -19,6 +19,6 @@ export class UsersController {
   async getCurrentUser(
     @CurrentUser() user: AuthenticatedUser,
   ): Promise<UserModel> {
-    return this.usersService.getCurrentUser(user);
+    return this.usersService.getUserFromAuthenticated(user);
   }
 }

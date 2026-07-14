@@ -4,9 +4,10 @@ import { JwtStrategy } from './auth/jwt.strategy';
 import { APP_GUARD, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
 import { JwtAuthGuard } from './auth/jwt-auth.guard';
 import { UsersModule } from './routes/users/users.module';
+import { WorkspacesModule } from './routes/workspaces/workspaces.module';
 
 @Module({
-  imports: [PassportModule, UsersModule],
+  imports: [PassportModule, UsersModule, WorkspacesModule],
   controllers: [],
   providers: [
     JwtStrategy,
