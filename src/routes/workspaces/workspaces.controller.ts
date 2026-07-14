@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { WorkspacesService } from './workspaces.service';
 import {
   CreateWorkspaceBodyDto,
@@ -26,5 +26,13 @@ export class WorkspacesController {
     @CurrentUser() user: AuthenticatedUser,
   ): Promise<WorkspaceModelDto[]> {
     return await this.workspacesService.getWorkspacesForUser(user);
+  }
+
+  @Get(':workspaceId')
+  async getWorkspaceById(
+    @CurrentUser() user: AuthenticatedUser,
+    @Param('workspaceId') workspaceId: string,
+  ): Promise<WorkspaceModelDto> {
+    return await this.workspacesService.getWorkspaceById(workspaceId, user);
   }
 }

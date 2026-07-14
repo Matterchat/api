@@ -1,0 +1,11 @@
+import { Module } from '@nestjs/common';
+import { ChannelsController } from './channels.controller';
+import { ChannelsService } from './channels.service';
+import { WorkspacesModule } from '../workspaces.module';
+
+@Module({
+  imports: [WorkspacesModule],
+  controllers: [ChannelsController],
+  providers: [ChannelsService],
+})
+export class ChannelsModule {}

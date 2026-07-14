@@ -2,10 +2,10 @@ import {
   CreateWorkspaceBodyDto,
   WorkspaceModelDto,
 } from '@matterchat/contracts';
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { AuthenticatedUser } from 'src/auth/current-user.decorator';
 import { UsersService } from '../users/users.service';
-import { db } from '@matterchat/database';
+import { db, WorkspaceRole } from '@matterchat/database';
 import { randomUUID } from 'crypto';
 
 @Injectable()
@@ -25,11 +25,11 @@ export class WorkspacesService {
       },
     });
 
-    // TODO: Add ownership permissions
     const membership = await db.workspaceMemberships.create({
       data: {
         userId: dbUser.id,
         workspaceId: workspace.id,
+        role: WorkspaceRole.OWNER,
       },
     });
 
@@ -50,5 +50,24 @@ export class WorkspacesService {
     });
 
     return workspaces.map((workspace) => new WorkspaceModelDto(workspace));
+  }
+
+  public async getWorkspaceById(workspaceId: string, user: AuthenticatedUser) {
+    const dbUser = await this.usersService.getUserFromAuthenticated(user);
+
+    const workspace = await db.workspace.findFirst({
+      where: {
+        id: workspaceId,
+        memberships: {
+          some: {
+            userId: dbUser.id,
+          },
+        },
+      },
+    });
+    if (!workspace)
+      throw new NotFoundException('Workspace not found or access denied');
+
+    return new WorkspaceModelDto(workspace);
   }
 }
