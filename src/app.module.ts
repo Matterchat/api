@@ -6,9 +6,20 @@ import { JwtAuthGuard } from './auth/jwt-auth.guard';
 import { UsersModule } from './routes/users/users.module';
 import { WorkspacesModule } from './routes/workspaces/workspaces.module';
 import { ChannelsModule } from './routes/workspaces/channels/channels.module';
+import { GatewayModule } from './routes/gateway/gateway.module';
+import { RedisModule } from './modules/redis.module';
 
 @Module({
-  imports: [PassportModule, UsersModule, WorkspacesModule, ChannelsModule],
+  imports: [
+    PassportModule,
+    RedisModule,
+
+    // Routes
+    UsersModule,
+    WorkspacesModule,
+    ChannelsModule,
+    GatewayModule,
+  ],
   controllers: [],
   providers: [
     JwtStrategy,
