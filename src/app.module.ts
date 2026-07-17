@@ -8,6 +8,7 @@ import { WorkspacesModule } from './routes/workspaces/workspaces.module';
 import { ChannelsModule } from './routes/workspaces/channels/channels.module';
 import { GatewayModule } from './routes/gateway/gateway.module';
 import { RedisModule } from './modules/redis.module';
+import { MessagesModule } from './routes/workspaces/channels/messages/messages.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { RedisModule } from './modules/redis.module';
     UsersModule,
     WorkspacesModule,
     ChannelsModule,
+    MessagesModule,
     GatewayModule,
   ],
   controllers: [],

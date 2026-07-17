@@ -5,6 +5,7 @@ import { RedisClient } from 'src/modules/redis.module';
 import Redis from 'ioredis';
 import { randomUUID } from 'crypto';
 import { GatewayTicketResponseDto } from '@matterchat/contracts';
+import { User } from '@matterchat/database';
 
 @Injectable()
 export class GatewayService {

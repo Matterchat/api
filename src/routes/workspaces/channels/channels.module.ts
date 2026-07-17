@@ -7,5 +7,6 @@ import { WorkspacesModule } from '../workspaces.module';
   imports: [WorkspacesModule],
   controllers: [ChannelsController],
   providers: [ChannelsService],
+  exports: [ChannelsService],
 })
 export class ChannelsModule {}
