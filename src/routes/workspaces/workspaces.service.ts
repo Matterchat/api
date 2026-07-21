@@ -34,6 +34,14 @@ export class WorkspacesService {
       },
     });
 
+    await db.channel.create({
+      data: {
+        id: randomUUID(),
+        name: 'general',
+        workspaceId: workspace.id,
+      },
+    });
+
     return new WorkspaceModelDto(workspace);
   }
 
