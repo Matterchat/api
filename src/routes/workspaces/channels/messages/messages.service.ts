@@ -30,13 +30,13 @@ export class MessagesService {
       skip: offset,
       take: limit,
       orderBy: {
-        createdAt: 'asc',
+        createdAt: 'desc',
       },
       where: {
         channelId: channel.id,
       },
     });
 
-    return messages.map((msg) => new MessageModelDto(msg));
+    return messages.reverse().map((msg) => new MessageModelDto(msg));
   }
 }

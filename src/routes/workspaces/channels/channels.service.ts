@@ -33,7 +33,6 @@ export class ChannelsService {
 
     const channel = await db.channel.create({
       data: {
-        id: randomUUID(),
         name: body.name,
         workspaceId: workspace.id,
       },

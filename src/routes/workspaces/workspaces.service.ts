@@ -21,7 +21,6 @@ export class WorkspacesService {
 
     const workspace = await db.workspace.create({
       data: {
-        id: randomUUID(),
         name: body.name,
       },
     });
@@ -36,7 +35,6 @@ export class WorkspacesService {
 
     await db.channel.create({
       data: {
-        id: randomUUID(),
         name: 'general',
         workspaceId: workspace.id,
       },
