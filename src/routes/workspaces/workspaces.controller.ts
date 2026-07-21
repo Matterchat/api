@@ -43,4 +43,20 @@ export class WorkspacesController {
   ) {
     return await this.workspacesService.getWorkspaceMembers(workspaceId, user);
   }
+
+  @Post(':workspaceId/invites')
+  async createInvite(
+    @CurrentUser() user: AuthenticatedUser,
+    @Param('workspaceId') workspaceId: string,
+  ) {
+    return await this.workspacesService.createInvite(workspaceId, user);
+  }
+
+  @Post('invites/:inviteId/accept')
+  async acceptInvite(
+    @CurrentUser() user: AuthenticatedUser,
+    @Param('inviteId') inviteId: string,
+  ) {
+    return await this.workspacesService.acceptInvite(inviteId, user);
+  }
 }

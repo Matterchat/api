@@ -26,10 +26,33 @@ export class ChannelsService {
     user: AuthenticatedUser,
   ) {
     const dbUser = await this.usersService.getUserFromAuthenticated(user);
-    const workspace = await this.workspacesService.getWorkspaceById(
-      workspaceId,
-      user,
-    );
+    const workspace = await db.workspace.findFirst({
+      where: {
+        id: workspaceId,
+        memberships: {
+          some: {
+            userId: dbUser.id,
+          },
+        },
+      },
+      select: {
+        id: true,
+        name: true,
+        memberships: true,
+      },
+    });
+    if (!workspace)
+      throw new NotFoundException(
+        'Workspace not found or user is not a member',
+      );
+
+    const userRole = workspace.memberships.find(
+      (membership) => membership.userId === dbUser.id,
+    )!.role;
+    if (userRole !== WorkspaceRole.OWNER && userRole !== WorkspaceRole.ADMIN)
+      throw new ForbiddenException(
+        'User does not have permission to create channels',
+      );
 
     const channel = await db.channel.create({
       data: {
@@ -61,14 +84,6 @@ export class ChannelsService {
     if (!workspace)
       throw new NotFoundException(
         'Workspace not found or user is not a member',
-      );
-
-    const userRole = workspace.memberships.find(
-      (membership) => membership.userId === dbUser.id,
-    )!.role;
-    if (userRole !== WorkspaceRole.OWNER && userRole !== WorkspaceRole.ADMIN)
-      throw new ForbiddenException(
-        'User does not have permission to create channels',
       );
 
     const channels = await db.channel.findMany({
