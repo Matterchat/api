@@ -35,4 +35,12 @@ export class WorkspacesController {
   ): Promise<WorkspaceModelDto> {
     return await this.workspacesService.getWorkspaceById(workspaceId, user);
   }
+
+  @Get(':workspaceId/members')
+  async getWorkspaceMembers(
+    @CurrentUser() user: AuthenticatedUser,
+    @Param('workspaceId') workspaceId: string,
+  ) {
+    return await this.workspacesService.getWorkspaceMembers(workspaceId, user);
+  }
 }

@@ -2,6 +2,7 @@ import {
   ClassSerializerInterceptor,
   Controller,
   Get,
+  Param,
   UseInterceptors,
 } from '@nestjs/common';
 import {
@@ -20,5 +21,13 @@ export class UsersController {
     @CurrentUser() user: AuthenticatedUser,
   ): Promise<UserModel> {
     return this.usersService.getUserFromAuthenticated(user);
+  }
+
+  @Get('/:userId')
+  async getUserById(
+    @CurrentUser() user: AuthenticatedUser,
+    @Param('userId') userId: string,
+  ): Promise<UserModel> {
+    return await this.usersService.getUserById(user, userId);
   }
 }

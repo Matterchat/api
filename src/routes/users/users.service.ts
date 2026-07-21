@@ -47,4 +47,45 @@ export class UsersService {
 
     return new UserModelDto(dbUser);
   }
+
+  async getUserById(user: AuthenticatedUser, userId: string) {
+    const dbUser = await this.getUserFromAuthenticated(user);
+
+    // Check if the current user and the requested user have
+    // any shared workspaces
+    const sharedWorkspaces = await db.workspace.findMany({
+      where: {
+        AND: [
+          {
+            memberships: {
+              some: {
+                userId: dbUser.id,
+              },
+            },
+          },
+          {
+            memberships: {
+              some: {
+                userId: userId,
+              },
+            },
+          },
+        ],
+      },
+    });
+
+    if (sharedWorkspaces.length === 0)
+      throw new UnauthorizedException(
+        'You do not have permission to view this user',
+      );
+
+    const requestedUser = await db.user.findUnique({
+      where: {
+        id: userId,
+      },
+    });
+    if (!requestedUser) throw new NotFoundException('User not found');
+
+    return new UserModelDto(requestedUser);
+  }
 }

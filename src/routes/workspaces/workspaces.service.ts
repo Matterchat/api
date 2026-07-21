@@ -1,5 +1,6 @@
 import {
   CreateWorkspaceBodyDto,
+  UserModelDto,
   WorkspaceModelDto,
 } from '@matterchat/contracts';
 import { Injectable, NotFoundException } from '@nestjs/common';
@@ -69,5 +70,24 @@ export class WorkspacesService {
       throw new NotFoundException('Workspace not found or access denied');
 
     return new WorkspaceModelDto(workspace);
+  }
+
+  public async getWorkspaceMembers(
+    workspaceId: string,
+    user: AuthenticatedUser,
+  ) {
+    const dbUser = await this.usersService.getUserFromAuthenticated(user);
+    const workspace = await this.getWorkspaceById(workspaceId, user);
+
+    const members = await db.workspaceMemberships.findMany({
+      where: {
+        workspaceId: workspace.id,
+      },
+      include: {
+        user: true,
+      },
+    });
+
+    return members.map((membership) => new UserModelDto(membership.user));
   }
 }
