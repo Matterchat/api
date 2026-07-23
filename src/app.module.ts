@@ -8,6 +8,7 @@ import { WorkspacesModule } from './routes/workspaces/workspaces.module';
 import { ChannelsModule } from './routes/workspaces/channels/channels.module';
 import { GatewayModule } from './routes/gateway/gateway.module';
 import { RedisModule } from './modules/redis.module';
+import { StorageModule } from './modules/storage/storage.module';
 import { MessagesModule } from './routes/workspaces/channels/messages/messages.module';
 import { OfficesModule } from './routes/workspaces/offices/offices.module';
 
@@ -15,6 +16,7 @@ import { OfficesModule } from './routes/workspaces/offices/offices.module';
   imports: [
     PassportModule,
     RedisModule,
+    StorageModule,
 
     // Routes
     UsersModule,
