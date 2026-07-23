@@ -6,9 +6,14 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { AuthenticatedUser } from 'src/auth/current-user.decorator';
+import { StorageService } from 'src/modules/storage/storage.service';
+import {} from 'multer';
+import axios from 'axios';
 
 @Injectable()
 export class UsersService {
+  constructor(private readonly storageService: StorageService) {}
+
   // TODO: Add webhook sync between keycloak and database to keep user data in sync?
   async $upsertUser(userId: string, email: string, fullName: string) {
     if (typeof userId !== 'string' || userId.trim().length < 1)
@@ -20,19 +25,47 @@ export class UsersService {
     if (typeof fullName !== 'string' || fullName.trim().length < 1)
       throw new UnauthorizedException('Invalid fullName');
 
-    await db.user.upsert({
-      create: {
-        id: userId,
-        email: email,
-        fullName: fullName,
-      },
-      update: {
-        id: userId,
-        email: email,
-        fullName: fullName,
-      },
+    const existingUser = await db.user.findUnique({
       where: {
         id: userId,
+      },
+    });
+    if (existingUser) {
+      if (existingUser.email === email && existingUser.fullName === fullName)
+        return;
+
+      await db.user.update({
+        where: {
+          id: userId,
+        },
+        data: {
+          email: email,
+          fullName: fullName,
+        },
+      });
+
+      return;
+    }
+
+    const profilePic = await axios.get(
+      `https://ui-avatars.com/api/?background=random&name=${encodeURIComponent(fullName)}&size=512`,
+      {
+        responseType: 'arraybuffer',
+      },
+    );
+
+    const avatarUrl = await this.storageService.uploadAvatar(
+      Buffer.from(profilePic.data),
+      profilePic.headers['content-type'] as string,
+      userId,
+    );
+
+    await db.user.create({
+      data: {
+        id: userId,
+        email: email,
+        fullName: fullName,
+        avatarUrl: avatarUrl,
       },
     });
   }
@@ -87,5 +120,26 @@ export class UsersService {
     if (!requestedUser) throw new NotFoundException('User not found');
 
     return new UserModelDto(requestedUser);
+  }
+
+  async setAvatar(user: AuthenticatedUser, avatarFile: Express.Multer.File) {
+    const dbUser = await this.getUserFromAuthenticated(user);
+
+    const avatarUrl = await this.storageService.uploadAvatar(
+      avatarFile.buffer,
+      avatarFile.mimetype,
+      dbUser.id,
+    );
+
+    const updatedUser = await db.user.update({
+      where: {
+        id: dbUser.id,
+      },
+      data: {
+        avatarUrl: avatarUrl,
+      },
+    });
+
+    return new UserModelDto(updatedUser);
   }
 }

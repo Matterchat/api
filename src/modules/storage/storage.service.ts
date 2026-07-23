@@ -83,13 +83,13 @@ export class StorageService implements OnModuleInit {
     }
   }
 
-  async uploadAvatar(file: Express.Multer.File, key: string): Promise<string> {
+  async uploadAvatar(buffer: Buffer, mimetype: string, key: string): Promise<string> {
     await this.s3Client.send(
       new PutObjectCommand({
         Bucket: this.avatarBucketName,
         Key: key,
-        Body: file.buffer,
-        ContentType: file.mimetype,
+        Body: buffer,
+        ContentType: mimetype,
       }),
     );
 
