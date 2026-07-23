@@ -11,6 +11,7 @@ import { RedisModule } from './modules/redis.module';
 import { StorageModule } from './modules/storage/storage.module';
 import { MessagesModule } from './routes/workspaces/channels/messages/messages.module';
 import { OfficesModule } from './routes/workspaces/offices/offices.module';
+import { PresenceModule } from './routes/users/presence/presence.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { OfficesModule } from './routes/workspaces/offices/offices.module';
     MessagesModule,
     OfficesModule,
     GatewayModule,
+    PresenceModule
   ],
   controllers: [],
   providers: [
