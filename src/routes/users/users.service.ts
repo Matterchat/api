@@ -31,6 +31,20 @@ export class UsersService {
       },
     });
     if (existingUser) {
+      // Set default avatar if the user doesn't have one yet (migration from before avatars were added)
+      if (existingUser.avatarUrl === '') {
+        const avatarUrl = await this.getDefaultAvatarUrl(userId, fullName);
+
+        await db.user.update({
+          where: {
+            id: userId,
+          },
+          data: {
+            avatarUrl: avatarUrl,
+          },
+        });
+      }
+
       if (existingUser.email === email && existingUser.fullName === fullName)
         return;
 
@@ -47,6 +61,19 @@ export class UsersService {
       return;
     }
 
+    const avatarUrl = await this.getDefaultAvatarUrl(userId, fullName);
+
+    await db.user.create({
+      data: {
+        id: userId,
+        email: email,
+        fullName: fullName,
+        avatarUrl: avatarUrl,
+      },
+    });
+  }
+
+  private async getDefaultAvatarUrl(userId: string, fullName: string) {
     const profilePic = await axios.get(
       `https://ui-avatars.com/api/?background=random&name=${encodeURIComponent(fullName)}&size=512`,
       {
@@ -60,14 +87,7 @@ export class UsersService {
       userId,
     );
 
-    await db.user.create({
-      data: {
-        id: userId,
-        email: email,
-        fullName: fullName,
-        avatarUrl: avatarUrl,
-      },
-    });
+    return avatarUrl;
   }
 
   async getUserFromAuthenticated(user: AuthenticatedUser) {
